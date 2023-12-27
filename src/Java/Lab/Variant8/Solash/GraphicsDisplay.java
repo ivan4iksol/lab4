@@ -176,6 +176,7 @@ minY
                 graphics.moveTo(point.getX(), point.getY());
             }
         }
+
 // Отобразить график
         canvas.draw(graphics);
     }
@@ -236,35 +237,64 @@ minY
         canvas.setFont(axisFont);
         FontRenderContext context = canvas.getFontRenderContext();
 
-        if (minX <= 0.0 && maxX >= 0.0) {
-            // Draw the X-axis line
-            canvas.draw(new Line2D.Double(xyToPoint(minX, 0), xyToPoint(maxX, 0)));
 
+        canvas.setColor(Color.BLACK);
+        Point2D.Double zeroPointY = xyToPoint(0, 0);
+        Rectangle2D boundsZeroY = axisFont.getStringBounds("0", context);
+        canvas.drawString("0", (float) (zeroPointY.getX() - boundsZeroY.getWidth() + 10),
+                (float) (zeroPointY.getY() + boundsZeroY.getHeight() / 2));
+
+
+
+            // Draw the +X axis line
+            canvas.draw(new Line2D.Double(xyToPoint(minX, 0), xyToPoint(maxX, 0)));
             // Draw tick mark and label at each unit interval
             double unitInterval = 1.0; // Set the unit interval value
-            //for (double x = unitInterval; x <= maxX; x += unitInterval) {
-            //Point2D.Double tickMark = xyToPoint(1, 0);
 
+            for (double x = unitInterval; x <= maxX; x += unitInterval)            {
+                Point2D.Double tickMark = xyToPoint(x, 0);
+                // Draw tick mark
+                canvas.draw(new Line2D.Double(tickMark.getX(), tickMark.getY() - 5, tickMark.getX(), tickMark.getY() + 5));
+              if(x==unitInterval) {
+                    // Draw label
+                    Rectangle2D boundsTickLabel = axisFont.getStringBounds(Double.toString(1), context);
+
+                    canvas.drawString(Double.toString(1), (float) (tickMark.getX() - boundsTickLabel.getWidth() / 2),
+                            (float) (tickMark.getY() + boundsTickLabel.getHeight() + 5));
+                }
+             }
+
+        // Draw the +Y axis line
+            canvas.draw(new Line2D.Double(xyToPoint(0, minY), xyToPoint(0, maxY)));
+
+            for (double y = unitInterval; y <= maxY; y += unitInterval)            {
+                Point2D.Double tickMark = xyToPoint(0, y);
+                // Draw tick mark
+                canvas.draw(new Line2D.Double(tickMark.getX()-5, tickMark.getY(), tickMark.getX()+5, tickMark.getY()));
+
+                if(y==unitInterval) {
+                    // Draw label
+                    Rectangle2D boundsTickLabel = axisFont.getStringBounds(Double.toString(1), context);
+
+                    canvas.drawString(Double.toString(1), (float) (tickMark.getX() - boundsTickLabel.getWidth() / 2),
+                            (float) (tickMark.getY() + boundsTickLabel.getHeight() + 5));
+                }
+            }
+
+        // Draw the -Y axis line
+        for (double y = -unitInterval; y >= minY; y -= unitInterval)            {
+            Point2D.Double tickMark = xyToPoint(0, y);
             // Draw tick mark
-            //canvas.draw(new Line2D.Double(tickMark.getX(), tickMark.getY() - 5, tickMark.getX(), tickMark.getY() + 5));
-
-            // Draw label
-            Rectangle2D boundsTickLabel = axisFont.getStringBounds(Double.toString(1), context);
-            //canvas.drawString(Double.toString(1), (float) (tickMark.getX() - boundsTickLabel.getWidth() / 2),
-            //      (float) (tickMark.getY() + boundsTickLabel.getHeight() + 5));
-
-            // Break after drawing one tick mark and label
-            //   break;
-            //  }
-
-            // Draw the X-axis label
-            Rectangle2D boundsX = axisFont.getStringBounds("x", context);
-            Point2D.Double labelPosX = xyToPoint(maxX, 0);
-            canvas.drawString("x", (float) (labelPosX.getX() - boundsX.getWidth() - 10),
-                    (float) (labelPosX.getY() + boundsX.getY()));
-
-
+            canvas.draw(new Line2D.Double(tickMark.getX()-5, tickMark.getY(), tickMark.getX()+5, tickMark.getY()));
         }
+
+        // Draw the -X axis line
+        for (double x = -unitInterval; x >= minX; x -= unitInterval)            {
+            Point2D.Double tickMark = xyToPoint(x, 0);
+            // Draw tick mark
+            canvas.draw(new Line2D.Double(tickMark.getX(), tickMark.getY()-5, tickMark.getX(), tickMark.getY()+5));
+        }
+
 
         if (minY <= 0.0 && maxY >= 0.0) {
             canvas.draw(new Line2D.Double(xyToPoint(0, maxY), xyToPoint(0, minY)));
@@ -281,6 +311,10 @@ minY
             Rectangle2D boundsY = axisFont.getStringBounds("y", context);
             Point2D.Double labelPosY = xyToPoint(0, maxY);
             canvas.drawString("y", (float) labelPosY.getX() + 10, (float) (labelPosY.getY() - boundsY.getY()));
+
+            Rectangle2D boundsX = axisFont.getStringBounds("x", context);
+            Point2D.Double labelPosX = xyToPoint(maxX, 0);
+            canvas.drawString("x", (float) labelPosX.getX()-20, (float) (labelPosX.getY() - boundsX.getY())-10);
 
         }
     }
